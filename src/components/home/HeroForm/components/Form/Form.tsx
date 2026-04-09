@@ -14,6 +14,11 @@ import styles from '../../HeroForm.module.sass'
 //types
 import { initialFormProps, initialErrorProps } from './Form.model'
 
+
+interface Window {
+    dataLayer: Record<string, any>[];
+  }
+
 export const Form = () => {
 
     const { isOpenModal, openModal, closeModal } = useModal();
@@ -133,20 +138,33 @@ export const Form = () => {
 
 
     async function sendDataEmail(form: initialFormProps) {
-        //console.log("Enviando Email");
-        const url = `/api/send`
-        let options = {
-            body: form,
-            headers: { "content-type": "application/json" },
-        };
-        await helpHttp()
-            .post(url, options)
-            .then((res) => {
-                console.log(res)
-                setLoading(false)
-                handleReset()
-            });
-    }
+const url = `/api/send`
+let options = {
+ body: form,
+ headers: { "content-type": "application/json" },
+ };
+ await helpHttp()
+ .post(url, options)
+ .then((res) => {
+  console.log(res)
+  setLoading(false)
+                
+  // --- INICIO TRACKING GTM ---
+  // Verificamos que 'window' exista (Next.js SSR safety)
+  if (typeof window !== 'undefined') {
+  // Usamos (window as any) para evitar errores de TypeScript si no tienes dataLayer declarado globalmente
+  ;(window as Window).dataLayer = (window as Window).dataLayer || [];
+  ;(window as Window).dataLayer.push({
+  event: 'form_lead_sent',
+                        // Opcional: Mandar datos extra que no rompan privacidad para analítica
+  tipo_servicio: form.tipodeServicio 
+  });
+  }
+  // --- FIN TRACKING GTM ---
+
+  handleReset()
+ });
+ }
 
 
     //HANDLE RESET
