@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         if (!tipodeServicio || !fechaServicio || !firstName || !email || !phone) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
-
+        console.log('Received data:', { tipodeServicio, fechaServicio, firstName, email, phone });
         await resend.emails.send({
             to: [emailSender],
             from: 'Acme <onboarding@resend.dev>',
